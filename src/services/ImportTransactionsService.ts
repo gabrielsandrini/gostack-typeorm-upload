@@ -48,6 +48,10 @@ class ImportTransactionsService {
     return lines;
   }
 
+  private async deleteFile({ file_path }: Request): Promise<void> {
+    await fs.promises.unlink(file_path);
+  }
+
   private rawDataToTransactionData(rawData: RawData): TransactionData[] {
     const transactionsData: TransactionData[] = rawData.map(data => {
       const [title, type, value, category] = data;
@@ -124,6 +128,12 @@ class ImportTransactionsService {
       transactionsData,
     );
 
+    /*
+     * The incomes operations are being executed before the outcome operations
+     * to avoid throw the "not enought money" error when creating new
+     * transactions
+     */
+
     const incomeTransactions = await this.saveTransactions(
       'income',
       transactionsDataByType.income,
@@ -133,6 +143,8 @@ class ImportTransactionsService {
       'outcome',
       transactionsDataByType.outcome,
     );
+
+    await this.deleteFile({ file_path });
 
     return [...incomeTransactions, ...outcomeTransactions];
   }
