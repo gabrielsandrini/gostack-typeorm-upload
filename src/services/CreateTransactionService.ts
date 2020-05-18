@@ -16,10 +16,10 @@ interface Request {
 
 class CreateTransactionService {
   public async execute({
-    title = 'untitled',
+    title = 'Untitled',
     value,
     type,
-    category_title = 'none',
+    category_title = 'Others',
   }: Request): Promise<Transaction> {
     const transactionRepository = getCustomRepository(TransactionRepository);
     const categoryRepository = getRepository(Category);
