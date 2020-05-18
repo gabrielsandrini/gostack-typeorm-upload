@@ -27,7 +27,8 @@ export default class CreateTransactionAndCategoryTable1589749769683
           },
           {
             name: 'value',
-            type: 'money',
+            type: 'decimal',
+            scale: 2,
           },
           {
             name: 'type',
