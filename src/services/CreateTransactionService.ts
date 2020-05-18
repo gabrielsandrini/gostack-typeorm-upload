@@ -11,7 +11,7 @@ interface Request {
   title: string;
   value: number;
   type: 'income' | 'outcome';
-  categoryTitle: string;
+  category_title: string;
 }
 
 class CreateTransactionService {
@@ -19,7 +19,7 @@ class CreateTransactionService {
     title = 'untitled',
     value,
     type,
-    categoryTitle = 'none',
+    category_title = 'none',
   }: Request): Promise<Transaction> {
     const transactionRepository = getCustomRepository(TransactionRepository);
     const categoryRepository = getRepository(Category);
@@ -28,7 +28,7 @@ class CreateTransactionService {
     const isRequestValid =
       value && type && (type === 'income' || type === 'outcome');
     if (!isRequestValid) {
-      throw new AppError('Invalid data', 400);
+      throw new AppError('Invalid data');
     }
 
     // Check if balance is valid
@@ -38,19 +38,18 @@ class CreateTransactionService {
       if (balance.total - value < 0) {
         throw new AppError(
           "You don't have enought money to do this transaction",
-          403,
         );
       }
     }
 
     // Check if category exists
     let category = await categoryRepository.findOne({
-      where: { title: categoryTitle },
+      where: { title: category_title },
     });
 
     // IF category doesn't exists, create it
     if (!category) {
-      category = categoryRepository.create({ title: categoryTitle });
+      category = categoryRepository.create({ title: category_title });
       await categoryRepository.save(category);
     }
 
